@@ -39,3 +39,5 @@ python bonus_password_generator.py  # if completed
 - [ ] (Optional) Bonus password generator completed
 - [ ] All code is properly commented
 - [ ] Repository pushed to GitHub
+## Student: Gerard Mena
+Date: 2025-10-04
