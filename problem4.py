@@ -3,6 +3,8 @@ Problem 4: File Word Counter
 Process text files and perform various analyses.
 """
 
+import string
+
 def create_sample_file(filename="sample.txt"):
     """
     Create a sample text file for testing.
@@ -10,12 +12,14 @@ def create_sample_file(filename="sample.txt"):
     Args:
         filename (str): Name of the file to create
     """
-    content = """Python is a powerful programming language.
-It is widely used in web development, data science, and automation.
-Python's simple syntax makes it great for beginners.
-Many companies use Python for their projects."""
+    content = (
+        "Python is a powerful programming language.\n"
+        "It is widely used in web development, data science, and automation.\n"
+        "Python's simple syntax makes it great for beginners.\n"
+        "Many companies use Python for their projects."
+    )
 
-    with open(filename, 'w') as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write(content)
     print(f"Created {filename}")
 
@@ -30,9 +34,8 @@ def count_words(filename):
     Returns:
         int: Total number of words
     """
-    # TODO: Open file and count words
-    # Hint: Use split() to separate words
-    pass
+    with open(filename, "r", encoding="utf-8") as f:
+        return sum(len(line.split()) for line in f)
 
 
 def count_lines(filename):
@@ -45,8 +48,8 @@ def count_lines(filename):
     Returns:
         int: Total number of lines
     """
-    # TODO: Open file and count lines
-    pass
+    with open(filename, "r", encoding="utf-8") as f:
+        return sum(1 for _ in f)
 
 
 def count_characters(filename, include_spaces=True):
@@ -60,9 +63,25 @@ def count_characters(filename, include_spaces=True):
     Returns:
         int: Total number of characters
     """
-    # TODO: Open file and count characters
-    # If include_spaces is False, don't count spaces
-    pass
+    with open(filename, "r", encoding="utf-8") as f:
+        text = f.read()
+
+    if include_spaces:
+        return len(text)
+    else:
+        # Quita todos los espacios en blanco (espacios, tabs, saltos de línea)
+        # 'split' separa por cualquier whitespace y 'join' los pega sin separadores
+        return len("".join(text.split()))
+
+
+def _normalize_words(text):
+    """
+    Helper: quita signos de puntuación y devuelve lista de palabras en minúscula.
+    """
+    # Elimina puntuación con translate (más rápido que replace/regex para este caso)
+    table = str.maketrans("", "", string.punctuation)
+    cleaned = text.translate(table).lower()
+    return cleaned.split()
 
 
 def find_longest_word(filename):
@@ -73,11 +92,14 @@ def find_longest_word(filename):
         filename (str): Name of the file to analyze
 
     Returns:
-        str: The longest word found
+        str: The longest word found ('' si el archivo no tiene palabras)
     """
-    # TODO: Find the longest word
-    # Hint: You might need to remove punctuation
-    pass
+    with open(filename, "r", encoding="utf-8") as f:
+        words = _normalize_words(f.read())
+
+    if not words:
+        return ""
+    return max(words, key=len)
 
 
 def word_frequency(filename):
@@ -89,19 +111,15 @@ def word_frequency(filename):
         filename (str): Name of the file to analyze
 
     Returns:
-        dict: Dictionary with words as keys and frequencies as values
+        dict: {word: frequency}
     """
-    import string
+    with open(filename, "r", encoding="utf-8") as f:
+        words = _normalize_words(f.read())
 
-    frequency = {}
-
-    # TODO: Open file
-    # TODO: Read all words
-    # TODO: Convert to lowercase
-    # TODO: Remove punctuation (use string.punctuation)
-    # TODO: Count frequency of each word
-
-    return frequency
+    freq = {}
+    for w in words:
+        freq[w] = freq.get(w, 0) + 1
+    return freq
 
 
 def analyze_file(filename):
@@ -126,8 +144,8 @@ def analyze_file(filename):
         print("\nTop 5 most common words:")
         freq = word_frequency(filename)
 
-        # Sort by frequency and get top 5
-        top_words = sorted(freq.items(), key=lambda x: x[1], reverse=True)[:5]
+        # Sort por frecuencia (desc) y luego alfabético (estable)
+        top_words = sorted(freq.items(), key=lambda x: (-x[1], x[0]))[:5]
         for word, count in top_words:
             print(f"  '{word}': {count} times")
 

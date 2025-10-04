@@ -22,6 +22,23 @@ def get_numbers_from_user():
 
     return numbers
 
+def get_numbers_from_user():
+    """
+    Pide números hasta que el usuario escriba 'done' (o vacío).
+    Devuelve la lista de números (floats).
+    """
+    numbers = []
+    while True:
+        raw = input("Enter a number (or 'done' to finish): ").strip()
+        if raw.lower() in ("done", ""):
+            break
+        try:
+            num = float(raw.replace(",", "."))  # acepta coma decimal
+            numbers.append(num)
+        except ValueError:
+            print("Please enter a valid number or 'done'.")
+    return numbers
+
 
 def analyze_numbers(numbers):
     """
@@ -55,6 +72,33 @@ def analyze_numbers(numbers):
 
     return analysis
 
+def analyze_numbers(numbers):
+    """
+    Devuelve métricas básicas sobre una lista de números.
+    Si la lista está vacía, devuelve None.
+    """
+    if not numbers:
+        return None
+
+    count = len(numbers)
+    total = sum(numbers)
+    average = total / count
+    minimum = min(numbers)
+    maximum = max(numbers)
+
+    even_count = sum(1 for x in numbers if x % 2 == 0)
+    odd_count = count - even_count
+
+    return {
+        "count": count,
+        "sum": total,
+        "average": average,
+        "minimum": minimum,
+        "maximum": maximum,
+        "even_count": even_count,
+        "odd_count": odd_count,
+    }
+
 
 def display_analysis(analysis):
     """
@@ -77,6 +121,20 @@ def display_analysis(analysis):
     # etc.
     pass
 
+def display_analysis(analysis):
+    """Muestra el diccionario de métricas en formato legible."""
+    if not analysis:
+        print("No analysis to display.")
+        return
+    print("\nAnalysis Results:")
+    print("-" * 20)
+    print(f"Count:     {analysis['count']}")
+    print(f"Sum:       {analysis['sum']}")
+    print(f"Average:   {analysis['average']:.2f}")
+    print(f"Minimum:   {analysis['minimum']}")
+    print(f"Maximum:   {analysis['maximum']}")
+    print(f"Evens:     {analysis['even_count']}")
+    print(f"Odds:      {analysis['odd_count']}")
 
 def main():
     """Main function to run the number analyzer."""
@@ -100,3 +158,17 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+def main():
+    """Ejecuta el analizador de números en modo interactivo."""
+    print("Number Analyzer")
+    print("Enter numbers one at a time. Type 'done' when finished.")
+    print()
+
+    numbers = get_numbers_from_user()
+    if not numbers:
+        print("No numbers entered!")
+        return
+
+    analysis = analyze_numbers(numbers)
+    display_analysis(analysis)
